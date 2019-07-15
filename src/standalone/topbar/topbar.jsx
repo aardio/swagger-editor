@@ -5,10 +5,9 @@ import URL from "url"
 import "whatwg-fetch"
 import DropdownMenu from "./DropdownMenu"
 import reactFileDownload from "react-file-download"
-import YAML from "@kyleshockey/js-yaml"
+import YAML from "js-yaml"
 import beautifyJson from "json-beautify"
 
-import "react-dd-menu/dist/react-dd-menu.css"
 import Logo from "./logo_small.svg"
 
 export default class Topbar extends React.Component {
@@ -121,10 +120,13 @@ export default class Topbar extends React.Component {
       }
     }
 
-    if(language === "yaml") {
-      //// the content is YAML,
-      //// so download as-is
-      return this.downloadFile(editorContent, `${fileName}.yaml`)
+    if(language === "yaml") { 
+      return window.aardio.saveFile(editorContent, `${fileName}.yaml`).then( 
+          path=>{ 
+            document.title="Swagger Editor( 已保存到: " +path +" 保存时间:" + new Date().toLocaleTimeString() + ")"
+            setTimeout(()=>{document.title="Swagger Editor"},3000) 
+          }
+      )
     }
 
     //// the content is JSON,
@@ -133,8 +135,13 @@ export default class Topbar extends React.Component {
     // JSON String -> JS object
     let jsContent = YAML.safeLoad(editorContent)
     // JS object -> YAML string
-    let yamlContent = YAML.safeDump(jsContent)
-    this.downloadFile(yamlContent, `${fileName}.yaml`)
+    let yamlContent = YAML.safeDump(jsContent) 
+    return window.aardio.saveFile(yamlContent, `${fileName}.yaml`).then( 
+        path=>{ 
+          document.title="Swagger Editor( 已保存到: " +path +" 保存时间:" + new Date().toLocaleTimeString() + ")"
+          setTimeout(()=>{document.title="Swagger Editor"},3000) 
+        }
+    )
   }
 
   saveAsJson = () => {
@@ -150,8 +157,13 @@ export default class Topbar extends React.Component {
     // JSON or YAML String -> JS object
     let jsContent = YAML.safeLoad(editorContent)
     // JS Object -> pretty JSON string
-    let prettyJsonContent = beautifyJson(jsContent, null, 2)
-    this.downloadFile(prettyJsonContent, `${fileName}.json`)
+    let prettyJsonContent = beautifyJson(jsContent, null, 2) 
+    return window.aardio.saveFile(prettyJsonContent, `${fileName}.json`).then( 
+        path=>{ 
+          document.title="Swagger Editor( 已保存到: " +path +" 保存时间:" + new Date().toLocaleTimeString() + ")"
+          setTimeout(()=>{document.title="Swagger Editor"},3000) 
+        }
+    )
   }
 
   saveAsText = () => {
@@ -292,6 +304,7 @@ export default class Topbar extends React.Component {
   ///// Lifecycle
 
   componentDidMount() {
+    window.saveAsYaml = this.saveAsYaml
     this.instantiateGeneratorClient()
   }
 
@@ -347,7 +360,7 @@ export default class Topbar extends React.Component {
     }
 
     return (
-      <div>
+      <div className="swagger-editor-standalone">
         <div className="topbar">
           <div className="topbar-wrapper">
             <Link href="#">

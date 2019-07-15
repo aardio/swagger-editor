@@ -20,8 +20,6 @@ import "brace/ext/language_tools"
 import "brace/ext/searchbox"
 import "./brace-snippets-yaml"
 
-import "./editor.less"
-
 const NOOP = Function.prototype // Apparently the best way to no-op
 
 export default function makeEditor({ editorPluginsToRun }) {
@@ -111,6 +109,8 @@ export default function makeEditor({ editorPluginsToRun }) {
         props.editorActions.onLoad({...props, langTools, editor})
 
       this.updateMarkerAnnotations(this.props)
+
+      window.aceEditor = editor;
     }
 
     onResize = () => {

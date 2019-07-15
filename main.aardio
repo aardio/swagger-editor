@@ -1,0 +1,207 @@
+import config;
+import fsys.codepage;
+import web.json;
+import chrome.app;
+var theApp = chrome.app();
+
+/*
+在下面的external对象中指定允许chrome中使用JS直接调用的函数
+在网页中直接引用"/aardio.js"下面的external 会自动转换为js中的aardio对象.
+"/aardio.js"是由 aardio虚拟的JS文件(不用自己准备这个文件)。
+*/
+theApp.external = {  
+    
+    saveFile = function(data,filename){
+       config.editor.filename = "/" + filename
+       var path = io.fullpath(config.editor.filename)
+       string.save(path, data)
+       return path;
+    }  
+    
+    listDataPath = function(dataPaths){
+    	swaggerDataPaths = ..web.json.strip(dataPaths);
+    }
+    
+    $showLogin = function($){
+        var token =  "在这里输入令牌"
+        
+    	theApp.doScript($,`
+    	var authorizeButton = document.querySelector(".auth-wrtheApper button.btn.authorize.unlocked");
+    	if(authorizeButton){
+    		authorizeButton.click();
+    		setTimeout( ()=>{
+    			let input = document.querySelector(".auth-container input[type=text]");
+    			if(input){
+					let lastValue = input.value;
+					input.value="` + token + `";
+					
+					// https://github.com/facebook/react/issues/11488#issuecomment-347775628
+					let event = new Event('input', { bubbles: true });
+					event.simulated = true;// hack React15
+					let tracker = input._valueTracker;// hack React16
+					if (tracker) {
+  						tracker.setValue(lastValue);
+					}
+					
+					input.dispatchEvent(event);  
+					
+					input.focus(); 
+					input.select();
+    			}
+    		},100)
+    	}
+    	`)
+    }
+    
+    $insertTemplate = function($){
+  		var template  = fsys.codepage.load("\aproj-res\snippet.ctrl-insert.txt","utf-8")
+  		
+  		theApp.doScript($,`var snippetManager = ace.acequire ("ace/snippets").snippetManager;
+    snippetManager.insertSnippet(aceEditor, "` + string.escape(template,true) + `");`)
+    	//theApp.doScript($,"aceEditor.insert(`%s`)",template);
+    }
+}
+
+// 加载一个页面完成会触发这个事件(要求引用了"/aardio.js")
+theApp.onUrlReady = function($,url){ 
+    var js = `
+	var dataPaths = Array.from( document.querySelectorAll("[data-path]") );
+	aardio.listDataPath( dataPaths.map( v =>v.getAttribute("data-path") ) );
+			
+    //修正swagger editor的docExpansion=none参数有bug会导致无法展开、无法跳转到对应的代码行
+    Array.from( document.querySelectorAll(".expand-operation") ).forEach( v =>{ if(v.title=="Collapse operation") v.click() } )
+    
+    var snippetManager = ace.acequire("ace/snippets").snippetManager;
+	var snippets = snippetManager.parseSnippetFile("` 
+		+ (string.escape(fsys.codepage.load("\aproj-res\snippets.swagger.txt"),true) : `snippet hello\n  hello ${1:world}...!`)
+		+ `"); 
+		
+	/*
+	snippets.push({
+  		content: "hello ${1:world}...!",
+  		name: "hello",
+  		tabTrigger: "hello"
+	});
+	*/
+	snippetManager.register(snippets, "yaml");
+    `
+    
+    theApp.doScript($,js)
+
+    //接收js函数的返回值
+	theApp.callback("hello",function($,result,err){
+		theApp.msgbox(result : err,"调用js的hello函数以后返回值了");
+	})
+
+    //调用所有页面的JS函数
+    theApp.survey("hello","aardio");
+    
+    import win.ui;  
+	var winform = win.form(text="aardio form";right=285;bottom=25;border="none";bgcolor=0;exmode="toolwindow";parent=theApp.hwndChrome)
+	winform.add(
+	combobox={cls="combobox";left=2;top=1;right=283;bottom=27;edge=1;items={};mode="dropdown";hscroll=1;vscroll=1;z=1}
+	)
+	
+	var oldX,oldY
+	winform.setInterval( 
+		15,function(){
+			if(!win.getStyle(theApp.hwndChrome,0x800000/*_WS_BORDER*/)){
+				winform.show(false);
+				return;
+			}
+			
+			if(!win.isVisible(winform.hwnd)){
+				winform.show(true);
+			}
+			
+			var x,y,cx,cy = win.getPos(theApp.hwndChrome) 
+			if(x!=oldX || y != oldY ){
+				winform.setPos(x+cx-500,y+40)
+				winform.show() 	
+			} 
+		} 
+	)
+	
+	winform.combobox.editBox.disableInputMethod()
+	winform.combobox.editBox.setCueBannerText("请输入要查找的API路径,大小写敏感")	
+	
+	var updateSwaggerDataPaths = function(text){
+		text = string.replace(text,'"',"")
+		
+		if(!#text){
+			var js =`
+				Array.from( document.querySelectorAll(".expand-operation") ).forEach( v =>{ if(v.title=="Collapse operation") v.click() } )
+			`
+			theApp.doScript($,js);
+			return;
+		}
+		
+		var js =`
+		Array.from( document.querySelectorAll(".expand-operation") ).forEach( v =>{ if(v.title!="Collapse operation") v.click() } )
+		
+		setTimeout( () => {
+			var dataPaths = Array.from( document.querySelectorAll("[data-path]") );
+			aardio.listDataPath( dataPaths.map( v =>v.getAttribute("data-path") ) );
+		},1);
+		
+		var dataElement = document.querySelector('[data-path="`+text+`"]') 
+			||  document.querySelector('[data-path^="`+text+`"]')
+			||  document.querySelector('[data-path*="`+text+`"]')
+		if(dataElement){
+	
+			var p = dataElement.parentElement;
+			var n = p.nextElementSibling;
+			
+			if( !n || n.tagName=="NOSCRIPT" ) p.click()
+			dataElement.scrollIntoView()
+		}
+		
+		aceEditor.find('`+text+`' + ":",{
+    		backwards: false,
+    		wrap: false,
+    		caseSensitive: false,
+    		wholeWord: false,
+    		regExp: false
+		});
+		aceEditor.findNext();
+		aceEditor.findPrevious();
+		`
+		theApp.doScript($,js);	
+	}
+	
+	winform.combobox.onListChange = function(){
+		updateSwaggerDataPaths(winform.combobox.selText);
+	}
+	
+	winform.combobox.onEditChange  = function(id,event){ 
+		var text = winform.combobox.text;
+		updateSwaggerDataPaths(text); 
+		
+		if(#swaggerDataPaths){
+            winform.combobox.autoComplete( 
+            	..table.filter(swaggerDataPaths,lambda(v)..string.startWith(v,text) ) 
+            )
+        }	 
+	} 
+}
+
+//WebSocke/RPC中遇到的错误都会触发这个函数,可以在这里自定义错误处理方式
+theApp.ws.onError = function(hSocket,err){
+	errput(err,"swagger editor/rpc error");//当然也可以在 global.onError 里自定义全部的错误信息怎么显示
+}
+
+if(!config.editor.filename)  config.editor.filename = "/openapi.yaml"
+if(!..io.exist(config.editor.filename)){
+    string.save(config.editor.filename,string.load("\aproj-res\example.yaml") )
+}
+
+//正式的启动chrome进程，aardio会自动把下面的文件转换为服务端请求
+theApp.start("/dist/index.html?url="+config.editor.filename );
+
+//网页中可以调用 aardio.quit() 退出,也可以直接关闭chrome窗口退出
+win.loopMessage();
+
+/*
+关于 Swagger Editor 
+http://editor.swagger.io
+*/

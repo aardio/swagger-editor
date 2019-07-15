@@ -21,6 +21,7 @@ export class JumpToPath extends React.Component {
   }
 
   shouldComponentUpdate(nextProps) {
+    if(!nextProps.fn) return false
     let { shallowEqualKeys } = nextProps.fn
     return shallowEqualKeys(this.props, nextProps, [
       "content", "showButton", "path", "specPath"

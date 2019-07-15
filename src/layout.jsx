@@ -20,6 +20,8 @@ export default class EditorLayout extends React.Component {
   }
 
   onDrop = (acceptedFiles, rejectedFiles) => {
+    if(!acceptedFiles.length) return;
+    
     const someFilesWereRejected = rejectedFiles && rejectedFiles.length > 0
     const thereIsExactlyOneAcceptedFile = acceptedFiles && acceptedFiles.length === 1
     if ( someFilesWereRejected || !thereIsExactlyOneAcceptedFile) {
@@ -46,7 +48,7 @@ export default class EditorLayout extends React.Component {
     const Container = getComponent("Container")
 
     return (
-      <div>
+      <div className="swagger-editor">
         <Container className="container">
           <Dropzone
             className="dropzone"
@@ -59,9 +61,10 @@ export default class EditorLayout extends React.Component {
           {({ isDragActive }) => {
             if (isDragActive) {
               return (
-                <div className="dropzone__overlay">
-                  Please drop a .yaml or .json OpenAPI spec.
-                </div>
+                <SplitPaneMode>
+                  <EditorContainer onChange={this.onChange} />
+                  <UIBaseLayout/>
+                </SplitPaneMode>
               )
             } else {
               return (

@@ -1,0 +1,19 @@
+﻿/${1:接口路径}:
+  ${2:post}:
+    tags:
+    - ${3:指定分组标签}
+    summary: ${4:指定接口名称}
+    requestBody: 
+      description: ${5:指定请求数据的描述}
+      content:
+        application/json: 
+          schema:
+            $ref: '#/components/schemas/${6:需要引用的对象声明}' 
+      required: true
+    responses:
+      401:
+        \$ref: '#/components/responses/UnauthorizedError'
+      200:
+        description: ${7:操作成功}
+        content: {}
+${0}

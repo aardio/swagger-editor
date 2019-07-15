@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<project ver="10" name="swaggerEditor" libEmbed="true" icon="app.ico" ui="win" output="swaggerEditor.exe" CompanyName="单位名称" FileDescription="swaggerEditor" LegalCopyright="Copyright (C) 单位名称 2020" ProductName="swaggerEditor" InternalName="swaggerEditor" FileVersion="0.0.0.02" ProductVersion="0.0.0.02" publishDir="\dist-exe\" dstrip="false">
+	<file name="main.aardio" path="main.aardio" comment="main.aardio"/>
+	<folder name="Js渲染进程" path="dist" embed="true" local="false">
+		<file name="favicon-16x16.png" path="dist\favicon-16x16.png" comment="dist\favicon-16x16.png"/>
+		<file name="favicon-32x32.png" path="dist\favicon-32x32.png" comment="dist\favicon-32x32.png"/>
+		<file name="index.html" path="dist\index.html" comment="dist\index.html"/>
+		<file name="swagger-editor-bundle.js" path="dist\swagger-editor-bundle.js" comment="dist\swagger-editor-bundle.js"/>
+		<file name="swagger-editor-standalone-preset.js" path="dist\swagger-editor-standalone-preset.js" comment="dist\swagger-editor-standalone-preset.js"/>
+		<file name="swagger-editor.css" path="dist\swagger-editor.css" comment="dist\swagger-editor.css"/>
+		<file name="swagger-editor.js" path="dist\swagger-editor.js" comment="dist\swagger-editor.js"/>
+		<file name="validator.worker.js" path="dist\validator.worker.js" comment="dist\validator.worker.js"/>
+	</folder>
+	<folder name="资源文件" path="aproj-res" embed="true" local="false">
+		<file name="example.yaml" path="aproj-res\example.yaml" comment="aproj-res\example.yaml"/>
+		<file name="favicon.ico" path="aproj-res\favicon.ico" comment="aproj-res\favicon.ico"/>
+		<file name="snippet.ctrl-insert.txt" path="aproj-res\snippet.ctrl-insert.txt" comment="aproj-res\snippet.ctrl-insert.txt"/>
+		<file name="snippets.swagger.txt" path="aproj-res\snippets.swagger.txt" comment="aproj-res\snippets.swagger.txt"/>
+	</folder>
+</project>

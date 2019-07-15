@@ -1,0 +1,772 @@
+﻿openapi: 3.0.1
+info:
+  title: 演示
+  description: |
+    本程序使用 [aardio](http://www.aardio.com) + chrome + swagger editor 实现,<br>
+    swagger使用的是ace编辑器 ,[编辑器快捷键列表](https://github.com/ajaxorg/ace/wiki/Default-Keyboard-Shortcuts)<br>
+   
+    注意ace里按Ctrl键用鼠标左键点击可以添加多光标，
+    而vs code里是按Alt键加鼠标左键点击添加多光标。
+    
+    注意openapi3.0模式下swagger不支持snippets，这个我已经做了一些扩展，
+    可以在文件 /res/snippet.ctrl-insert.txt 添加按Ctrl+Insert插入的代码段。
+    可以在文件 /res/snippets.swagger.txt 添加更多代码段，代码段中可以使用 ${光标序号:说明}插入多个输入位置，
+    在编辑器中输入代码段的前缀名，然后按一下tab就可以完成输入了。
+    我已经添加了一些代码段：spost(post请求),sget(get请求),sarr(数组),sobj(对象),sjwt(token),sref(引用)
+
+    另外我增加了一些提升效率的快捷键，增加了右上角的API路径快捷搜索框，
+    并修正了swagger editor一个严重的问题，swagger editor可能是对文件拖放这个特性过于自恋，
+    所以每次拖放都会弹全屏框告诉你可以拖yaml,json进来，问题是拖动文本，或者经常鼠标不小心抖一下他都疯狂的弹框，导致没有办法拖动文本，
+    但是即然别人都把yaml拖进来了，还需要弹框强调一下吗？！所以我把这个扰人又不必要的功能给去掉了。
+    
+    常用快捷键：
+    ----------------------------------------------------
+    > F1 切换预览模式<br>
+    > Shift + F1 切换编辑模式<br>
+    > Ctrl + F11 全屏预览<br>
+    > Ctrl + Shift + F11 全屏编辑<br>
+    > Ctrl + S 快速保存文件<br>
+    > Ctrl + Insert 插入代码段<br>
+    > Alt + 0 折叠除光标所在块以外的其他折叠块<br>
+    > F6 自动输入登录token
+    
+    还有下面的一些常用快捷键与aardio、vs code 都完全一样
+    ----------------------------------------------------
+    > Ctrl + / 切换注释</br>
+    
+    > Tab 缩进(存在选区，或光标在行首)</br>
+    > Shift + Tab 减少缩进(存在选区，或光标在行首)</br>
+    
+    > Ctrl + A 全选</br>
+    > ctrl + C 复制</br>
+    > ctrl + V 粘贴</br>
+    > ctrl + X 剪切</br>
+    
+    > Ctrl + Z 撤消</br>
+    > Ctrl + Y 重做</br>
+    
+    > Ctrl + F 查找</br>
+    > Ctrl + H 替换</br>
+    
+    > Shift +  ↑ ↓ ← →  改变文本选区。
+    
+    > Alt+  ↑ ↓  将当前行向上，或向下移动 
+    
+    > ctrl + → 移动到下一个单词（或符号）的开始处。</br>
+    > ctrl + ← 移动到下一个单词（或符号）的开始处。</br>
+    > Ctrl+↑ ↓        向上/向下滚动
+    
+    > Home 到行首</br>
+    > End 到行尾</br>
+    > Shift+ Home 扩展文本选区到行首</br>
+    > Shift+ End 扩展文本选区到行尾</br>
+    
+    > Ctrl + Home 到文件开始</br>
+    > Ctrl + End 到文件尾</br>
+    > Ctrl +Shift+ Home 扩展文本选区到文件开始</br>
+    > Ctrl +Shift+ End 扩展文本选区到文件尾</p>
+    	
+    [Swagger入门教程](http://blog.fudenglong.site/2017/11/26/Swagger-RESTFUL接口文档在线自动生成以及功能测试/)
+  version: 1.0.0
+servers:
+- url: http://petstore.swagger.io/v2 #指定服务器
+tags: #指点API接口分类，tag是一个对象名，后面要跟一个冒号和一个空格
+- name: pet #注意行首的短横线加一个空格表示这是一个数组成员
+  description: Everything about your Pets #与JSON不同的是字符串不必放引号里
+  externalDocs:
+    description: Find out more
+    url: http://swagger.io
+- name: store
+  description: Access to Petstore orders
+- name: user
+  description: Operations about user
+  externalDocs:
+    description: Find out more about our store
+    url: http://swagger.io
+paths: #这里是全部API接口路径了
+  /pet:
+    put:
+      tags:
+      - pet
+      summary: 这里写接口名称
+      requestBody: # 这是POST请求提交的数据
+        description: 这里写接口说明
+        content:
+          application/json: #指定MIME
+            schema:
+              $ref: '#/components/schemas/Pet' #这是引用后面的对象声明
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Pet' #这是引用后面的对象声明
+        required: true
+      responses:
+        400:
+          description: Invalid ID supplied
+          content: {}
+        404:
+          description: Pet not found
+          content: {}
+        405:
+          description: Validation exception
+          content: {}
+      security:
+      - petstore_auth:
+        - write:pets
+        - read:pets
+    post: # 指定POST请求接口
+      tags:
+      - pet
+      summary: 这里写接口名称
+      requestBody: # 这是POST请求提交的数据
+        description:  这里写接口说明
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Pet'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Pet'
+        required: true
+      responses:
+        405:
+          description: Invalid input
+          content: {}
+      security:
+      - petstore_auth:
+        - write:pets
+        - read:pets
+  /pet/findByStatus:
+    get:
+      tags:
+      - pet
+      summary: 一个GET请求示例
+      description: 这里可以写描述
+      parameters: # 注意发送的POST数据不是参数,参数只有URL路径参数，URL问号后的附加参数，Cookie,请求头等4种参数
+      - name: status
+        in: query  # 说明这是URL附加参数
+        description: 关于这个参数的详细说明
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+            default: available
+            enum:
+            - available
+            - pending
+            - sold
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pet'
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pet'
+        400:
+          description: Invalid status value
+          content: {}
+      security:
+      - petstore_auth:
+        - write:pets
+        - read:pets
+  /pet/findByTags:
+    get:
+      tags:
+      - pet
+      summary: Finds Pets by tags
+      description: Muliple tags can be provided with comma separated strings. Use         tag1,
+        tag2, tag3 for testing.
+      parameters:
+      - name: tags
+        in: query
+        description: Tags to filter by
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pet'
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pet'
+        400:
+          description: Invalid tag value
+          content: {}
+      deprecated: true
+      security:
+      - petstore_auth:
+        - write:pets
+        - read:pets
+  /pet/{petId}:
+    get:
+      tags:
+      - pet
+      summary: Find pet by ID
+      description: Returns a single pet
+      parameters:
+      - name: petId
+        in: path
+        description: ID of pet to return
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Pet'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+        400:
+          description: Invalid ID supplied
+          content: {}
+        404:
+          description: Pet not found
+          content: {}
+      security:
+      - api_key: []
+    post:
+      tags:
+      - pet
+      summary: Updates a pet in the store with form data
+      operationId: updatePetWithForm
+      parameters:
+      - name: petId
+        in: path
+        description: ID of pet that needs to be updated
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                name:
+                  type: string
+                  description: Updated name of the pet
+                status:
+                  type: string
+                  description: Updated status of the pet
+      responses:
+        405:
+          description: Invalid input
+          content: {}
+      security:
+      - petstore_auth:
+        - write:pets
+        - read:pets
+    delete:
+      tags:
+      - pet
+      summary: Deletes a pet
+      operationId: deletePet
+      parameters:
+      - name: api_key
+        in: header
+        schema:
+          type: string
+      - name: petId
+        in: path
+        description: Pet id to delete
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        400:
+          description: Invalid ID supplied
+          content: {}
+        404:
+          description: Pet not found
+          content: {}
+      security:
+      - petstore_auth:
+        - write:pets
+        - read:pets
+  /pet/{petId}/uploadImage:
+    post:
+      tags:
+      - pet
+      summary: uploads an image
+      operationId: uploadFile
+      parameters:
+      - name: petId
+        in: path
+        description: ID of pet to update
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                additionalMetadata:
+                  type: string
+                  description: Additional data to pass to server
+                file:
+                  type: string
+                  description: file to upload
+                  format: binary
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+      security:
+      - petstore_auth:
+        - write:pets
+        - read:pets
+  /store/inventory:
+    get:
+      tags:
+      - store
+      summary: Returns pet inventories by status
+      description: Returns a map of status codes to quantities
+      operationId: getInventory
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: integer
+                  format: int32
+      security:
+      - api_key: []
+  /store/order:
+    post:
+      tags:
+      - store
+      summary: Place an order for a pet
+      operationId: placeOrder
+      requestBody:
+        description: order placed for purchasing the pet
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/Order'
+        required: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Order'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        400:
+          description: Invalid Order
+          content: {}
+  /store/order/{orderId}:
+    get:
+      tags:
+      - store
+      summary: Find purchase order by ID
+      description: For valid response try integer IDs with value >= 1 and <= 10.         Other
+        values will generated exceptions
+      operationId: getOrderById
+      parameters:
+      - name: orderId
+        in: path
+        description: ID of pet that needs to be fetched
+        required: true
+        schema:
+          maximum: 10.0
+          minimum: 1.0
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Order'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        400:
+          description: Invalid ID supplied
+          content: {}
+        404:
+          description: Order not found
+          content: {}
+    delete:
+      tags:
+      - store
+      summary: Delete purchase order by ID
+      description: For valid response try integer IDs with positive integer value.         Negative
+        or non-integer values will generate API errors
+      operationId: deleteOrder
+      parameters:
+      - name: orderId
+        in: path
+        description: ID of the order that needs to be deleted
+        required: true
+        schema:
+          minimum: 1.0
+          type: integer
+          format: int64
+      responses:
+        400:
+          description: Invalid ID supplied
+          content: {}
+        404:
+          description: Order not found
+          content: {}
+  /user:
+    post:
+      tags:
+      - user
+      summary: Create user
+      description: This can only be done by the logged in user.
+      operationId: createUser
+      requestBody:
+        description: Created user object
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        default:
+          description: successful operation
+          content: {}
+  /user/createWithArray:
+    post:
+      tags:
+      - user
+      summary: Creates list of users with given input array
+      operationId: createUsersWithArrayInput
+      requestBody:
+        description: List of user object
+        content:
+          '*/*':
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        default:
+          description: successful operation
+          content: {}
+  /user/createWithList:
+    post:
+      tags:
+      - user
+      summary: Creates list of users with given input array
+      operationId: createUsersWithListInput
+      requestBody:
+        description: List of user object
+        content:
+          '*/*':
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        default:
+          description: successful operation
+          content: {}
+  /user/login:
+    get:
+      tags:
+      - user
+      summary: Logs user into the system
+      operationId: loginUser
+      parameters:
+      - name: username
+        in: query
+        description: The user name for login
+        required: true
+        schema:
+          type: string
+      - name: password
+        in: query
+        description: The password for login in clear text
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+            X-Expires-After:
+              description: date in UTC when token expires
+              schema:
+                type: string
+                format: date-time
+          content:
+            application/xml:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
+        400:
+          description: Invalid username/password supplied
+          content: {}
+  /user/logout:
+    get:
+      tags:
+      - user
+      summary: Logs out current logged in user session
+      operationId: logoutUser
+      responses:
+        default:
+          description: successful operation
+          content: {}
+  /user/{username}:
+    get:
+      tags:
+      - user
+      summary: Get user by user name
+      operationId: getUserByName
+      parameters:
+      - name: username
+        in: path
+        description: 'The name that needs to be fetched. Use user1 for testing. '
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/User'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Invalid username supplied
+          content: {}
+        404:
+          description: User not found
+          content: {}
+    put:
+      tags:
+      - user
+      summary: Updated user
+      description: This can only be done by the logged in user.
+      operationId: updateUser
+      parameters:
+      - name: username
+        in: path
+        description: name that need to be updated
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Updated user object
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        400:
+          description: Invalid user supplied
+          content: {}
+        404:
+          description: User not found
+          content: {}
+    delete:
+      tags:
+      - user
+      summary: Delete user
+      description: This can only be done by the logged in user.
+      operationId: deleteUser
+      parameters:
+      - name: username
+        in: path
+        description: The name that needs to be deleted
+        required: true
+        schema:
+          type: string
+      responses:
+        400:
+          description: Invalid username supplied
+          content: {}
+        404:
+          description: User not found
+          content: {}
+components:
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
+  schemas:
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        petId:
+          type: integer
+          format: int64
+        quantity:
+          type: integer
+          format: int32
+        shipDate:
+          type: string
+          format: date-time
+        status:
+          type: string
+          description: Order Status
+          enum:
+          - placed
+          - approved
+          - delivered
+        complete:
+          type: boolean
+          default: false
+      xml:
+        name: Order
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+      xml:
+        name: Category
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        username:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        phone:
+          type: string
+        userStatus:
+          type: integer
+          description: User Status
+          format: int32
+      xml:
+        name: User
+    Tag:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+      xml:
+        name: Tag
+    Pet:
+      required:
+      - name
+      - photoUrls
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        category:
+          $ref: '#/components/schemas/Category'
+        name:
+          type: string
+          example: doggie
+        photoUrls:
+          type: array
+          xml:
+            name: photoUrl
+            wrapped: true
+          items:
+            type: string
+        tags:
+          type: array
+          xml:
+            name: tag
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/Tag'
+        status:
+          type: string
+          description: pet status in the store
+          enum:
+          - available
+          - pending
+          - sold
+      xml:
+        name: Pet
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        type:
+          type: string
+        message:
+          type: string
+  securitySchemes:
+    petstore_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: http://petstore.swagger.io/oauth/dialog
+          scopes:
+            write:pets: modify pets in your account
+            read:pets: read your pets
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header

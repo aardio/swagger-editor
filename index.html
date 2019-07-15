@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Swagger Editor</title>
+  <title>Swagger Editor( F1: 切换预览;  Ctrl+F11:全屏预览;  Ctrl+Shift+F11:全屏编辑;  Ctrl+S: 保存文件;  Ctrl+Insert: 插入模板;  Tab: 增加缩进;  Shift+Tab减少缩进;  按Ctrl键单击添加多光标</title>
   <style>
   * {
     box-sizing: border-box;
@@ -60,6 +60,58 @@
 
     window.editor = editor
   }
+  </script>
+
+<script src="/aardio.js">
+  var previewMode = false;
+  document.onkeydown=function(e) {
+    e=e || window.event;
+    var key=e.keyCode || e.which;
+    var ctrlKey = e.ctrlKey || e.metaKey; 
+
+    if( key == 0x70/*_VK_F1*/ ){
+      if(!previewMode){
+         
+          if(e.shiftKey){
+            document.querySelector(".SplitPane .Pane1").style.flex = "2 1 0%"
+            document.querySelector(".SplitPane .Pane2").style.flex = "1 1 0%"
+          }
+          else{
+            document.querySelector(".SplitPane .Pane1").style.flex = "0 1 0%"
+            document.querySelector(".SplitPane .Pane2").style.flex = "2 1 0%"  
+          } 
+          previewMode = true;
+      }
+      else{
+          document.querySelector(".SplitPane .Pane1").style.flex = "1 1 0%"
+          document.querySelector(".SplitPane .Pane2").style.flex = "1 1 0%"
+          previewMode = false;
+      }
+
+      event.preventDefault();
+    }
+    else if( key == 83 && ctrlKey) {
+      window.saveAsYaml();
+      event.preventDefault();
+    }
+    else if( key == 45 && ctrlKey ){
+      aardio.$insertTemplate();
+    }
+    else if( key == 0x75/*_VK_F6*/) {
+      aardio.$showLogin();
+      event.preventDefault();
+    }
+    else if( key == 122 && ctrlKey ){
+      if(e.shiftKey){
+        aceEditor.container.webkitRequestFullscreen() 
+      }
+      else{
+        document.querySelector(".SplitPane .Pane2").style.backgroundColor = "#FFF";
+        document.querySelector(".SplitPane .Pane2").webkitRequestFullscreen() 
+      }
+      event.preventDefault();
+    }
+  } 
   </script>
 
   <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="position:absolute;width:0;height:0">

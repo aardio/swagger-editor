@@ -8,3 +8,6 @@ npm-debug.log*
 # Cypress
 test/e2e/screenshots
 test/e2e/videos
+dist-exe
+dist-exe/release.win.ui.ctrl.aardio
+/.build

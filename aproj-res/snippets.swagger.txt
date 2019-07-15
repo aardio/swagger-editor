@@ -1,0 +1,89 @@
+﻿snippet sample
+	在编辑器中输入上面的sample，然后按一下tab键就可以自动输入这里的内容，
+	用${1:说明}添加多个光标，数字表示按tab键切换光标位置的顺序.
+	
+	[${1:例子看这里}](https://github.com/ajaxorg/ace/blob/51f53efa96ca2507bafb1c980d022953df6f35c6/lib/ace/snippets/_.snippets)
+	注意行首一定要使用一个tab缩进,
+	而yaml里只能使用空格缩进，所以刚好他们不会冲突。
+	如何区分tab与空格:例如在VS Code里按Ctrl+F查找，输入一个tab制表符，那么所有tab制表符都会高亮显示。
+	注意所有的代码段前缀名字都以s开头
+snippet sref
+	\$ref: '#/components/${1:schemas}/${2:输入要引用的声明}'
+snippet sget
+	get:
+	  tags:
+	  - ${1:指定分组标签}
+	  summary: ${2:指定接口名称}
+	  parameters: 
+	  - name: ${3:URL参数名}
+	    in: query 
+	    description: ${4:参数说明}
+	    required: true
+	    schema:
+	      type: integer 
+	      format: int32
+	      example: ${5:这里写一个用于请求测试的数值}
+	  responses:
+	responses:
+	  200:
+	    description:  ${6:操作成功}
+	    content:
+	      application/json:
+	        schema:
+	          $ref: '#/components/schemas/${7:对象声明}'
+	    401:
+	      \$ref: '#/components/responses/UnauthorizedError'
+	${0}
+snippet spost
+	post:
+	  tags:
+	  - ${1:指定分组标签}
+	  summary: ${2:指定接口名称}
+	  requestBody: 
+	    description: ${3:指定请求数据的描述}
+	    content:
+	      application/json: 
+	        schema:
+	          \$ref: '#/components/schemas/${4:需要引用的对象声明}' 
+	    required: true
+	  responses:
+	    200:
+	      description:  ${6:操作成功}
+	      content:
+	        application/json:
+	          schema:
+	            $ref: '#/components/schemas/${7:对象声明}'
+	    401:
+	      \$ref: '#/components/responses/UnauthorizedError'
+	${0}
+snippet sjwt
+	securitySchemes:
+	  bearerAuth:
+	    type: http
+	    scheme: bearer
+	    bearerFormat: JWT
+	${0}
+snippet sarr      
+	type: array
+	items:
+	  ${1:$ref: '#/components/schemas/'}
+	  ${0}
+snippet sobj
+	type: object
+	  properties:
+	    id:
+	      type: integer
+	      format: int32
+	    date:
+	      type: string
+	      format: date-time
+	    status:
+	      type: string
+	      description: 枚举字符值演示
+	      enum:
+	      - placed
+	      - approved
+	      - delivered
+	    complete:
+	      type: boolean
+	      default: false
